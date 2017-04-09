@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ACRABackend</string>
+    <string name="title_error_detail">Error details</string>
+    <string name="crash">Well shit. I crashed.</string>
+</resources>
