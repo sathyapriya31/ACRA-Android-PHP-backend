@@ -72,7 +72,9 @@ public class VolleyConnect {
                             appversion = str.replace("APP_VERSION_NAME = ", "");
                         }else if(str.contains("at ") || str.contains("Exception") || str.contains("exception") ||
                                 str.contains("Caused by:") || str.contains("Caused by")){
-                            stacktrace += str + "\n";
+                            String aug = str.replace("LOGCAT = ", "");
+                            aug = aug.replace("{0-9}-{0-9} {0-9}:{0-9}:{0-9}.{0-9} {A-Z}/{A-Z} ({0-9}):", "");
+                            stacktrace += aug;
                         }else if(str.contains("PHONE_MODEL =")){
                             devices = str.replace("PHONE_MODEL = ", "");
                         }else if(str.contains("ANDROID_VERSION =")){

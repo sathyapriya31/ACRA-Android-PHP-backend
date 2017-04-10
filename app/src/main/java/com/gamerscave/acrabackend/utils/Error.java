@@ -1,9 +1,12 @@
 package com.gamerscave.acrabackend.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.HashMap;
+
+import static android.R.id.input;
 
 public class Error {
     private long ID;
@@ -84,6 +87,12 @@ public class Error {
 
     public String getStacktrace(){
         return stacktrace;
+    }
+
+    public String getDesc(){
+        String result = stacktrace.split("Exception")[0];
+        Log.e("DEBUG", "DESC: " + result);
+        return result;
     }
 
     public String getTitle(){
