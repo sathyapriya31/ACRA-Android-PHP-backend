@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gamerscave.acrabackend">
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -37,19 +39,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gamerscave.acrabackend.ErrorListActivity" />
         </activity>
-        <service
-            android:name=".BackgroundService"
-            android:enabled="true"
-            android:exported="false" />
-
-        <receiver android:name=".BackgroundHandler" />
-        <receiver android:name=".NotificationServiceStarterReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
-                <action android:name="android.intent.action.TIME_SET" />
-            </intent-filter>
-        </receiver>
+        <service android:name=".CRService" android:enabled="true" android:stopWithTask="false"/>
     </application>
 
 </manifest>

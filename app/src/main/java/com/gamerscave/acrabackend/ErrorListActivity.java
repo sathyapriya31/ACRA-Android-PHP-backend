@@ -146,8 +146,16 @@ public class ErrorListActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
+
         kill();
     }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        startService(new Intent(this, CRService.class));
+    }
+
     Timer timer = null;
     UpdateInterval runnable;
     boolean looper = false;
@@ -214,7 +222,12 @@ public class ErrorListActivity extends AppCompatActivity {
         VolleyConnect vc = new VolleyConnect();
         vc.connect(ErrorListActivity.this);
         if(rcv != null) {
-            rcv.invalidate();
+            runOnUiThread(new Runnable(){
+                public void run(){
+                    rcv.invalidate();
+                }
+            });
+
         }
     }
 

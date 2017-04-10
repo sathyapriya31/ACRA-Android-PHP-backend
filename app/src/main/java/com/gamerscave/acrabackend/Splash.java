@@ -32,6 +32,7 @@ public class Splash extends Activity {
     public void onCreate(Bundle sis){
         super.onCreate(sis);
         final String mod = android.os.Build.MODEL.toUpperCase();
+
         if(!TEST_DEVICE_CRASH.contains(mod) || !DEBUG) {
             new Content(this);
         }
@@ -49,6 +50,7 @@ public class Splash extends Activity {
 
                 }
                 //Reset the notification service
+
                 Saver.save("pushed", "false", Splash.this);
                 Intent i = new Intent(Splash.this, ErrorListActivity.class);
                 startActivity(i);
