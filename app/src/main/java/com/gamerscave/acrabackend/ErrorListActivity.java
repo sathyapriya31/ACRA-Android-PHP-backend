@@ -3,13 +3,17 @@ package com.gamerscave.acrabackend;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -19,6 +23,9 @@ import com.gamerscave.acrabackend.content.Content;
 import com.gamerscave.acrabackend.utils.VolleyConnect;
 
 import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * An activity representing a list of Errors. This activity
@@ -40,7 +47,6 @@ public class ErrorListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error_list);
-        new Content(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
@@ -59,8 +65,9 @@ public class ErrorListActivity extends AppCompatActivity {
 
 
     }
-
+    private RecyclerView rcv;
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        this.rcv = recyclerView;
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Content.ITEMS));
     }
 
@@ -126,10 +133,91 @@ public class ErrorListActivity extends AppCompatActivity {
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
 
+            public void inval(){
+                mView.invalidate();
+            }
+
             @Override
             public String toString() {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
         }
     }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        kill();
+    }
+    Timer timer = null;
+    UpdateInterval runnable;
+    boolean looper = false;
+    /*
+    This runnable simply refreshes the content while in the app. Every 5 minutes.
+     */
+
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate your main_menu into the menu
+        getMenuInflater().inflate(R.menu.coremenu, menu);
+
+        return true;
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean focus){
+        if(!focus){
+            kill();
+        }else{
+            start();
+        }
+        Log.e("DEBUG", "FOCUS " + focus);
+    }
+
+    public void start(){
+        if(timer == null){
+            timer = new Timer();
+            runnable = new UpdateInterval();
+            //180000 ms = 3 minutes
+            timer.scheduleAtFixedRate(runnable, 0L, 180000L);
+        }
+    }
+
+    public void kill(){
+        if(timer != null) {
+            timer.cancel();
+            boolean rep = runnable.cancel();
+            Log.e("DEBUG", "REP = " + rep);
+            runnable = null;
+            timer = null;
+            looper = false;//redeclare looper as false. Once we recreate the thread, we need this to be false
+            //to re-prepare it
+        }
+    }
+
+    public class UpdateInterval extends TimerTask {
+        @Override
+        public void run() {
+            Log.e("DEBUG", "Scheduled task tick");
+            if(!looper){
+                //Call Looper.prepare before creating calls to the internet.
+                //This only needs to be done once per thread, and is only allowed
+                //to do once per thread(hence the boolean). The thread is recalled,
+                //but is still once instance
+                Looper.prepare();
+                looper = true;
+            }
+            tick();
+        }
+    }
+
+    private void tick(){
+        VolleyConnect vc = new VolleyConnect();
+        vc.connect(ErrorListActivity.this);
+        if(rcv != null) {
+            rcv.invalidate();
+        }
+    }
+
+
+
 }

@@ -2,4 +2,7 @@
     <string name="app_name">ACRABackend</string>
     <string name="title_error_detail">Error details</string>
     <string name="crash">Well shit. I crashed.</string>
+    <string name="refresh">Refresh errors</string>
+    <string name="settings">Settings</string>
+
 </resources>

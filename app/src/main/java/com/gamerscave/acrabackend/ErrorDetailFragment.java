@@ -61,7 +61,7 @@ public class ErrorDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.error_detail)).setText(mItem.error.getStacktrace());
+            ((TextView) rootView.findViewById(R.id.error_detail)).setText(mItem.error.getContent());
         }
 
         return rootView;

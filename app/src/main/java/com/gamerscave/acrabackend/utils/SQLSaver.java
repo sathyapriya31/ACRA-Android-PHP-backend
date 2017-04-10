@@ -60,7 +60,7 @@ public class SQLSaver {
     public String getCreateDatabaseQuery(@NonNull String TABLE_NAME){
         String retval = "CREATE TABLE IF NOT EXISTS '" + TABLE_NAME +
                 "' (" + COLUMN_ID  + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_TIMES       + " LONG, " +
+                COLUMN_TIMES       + " INTEGER, " +
                 COLUMN_HASH        + " TEXT, " +
                 COLUMN_DEVICES     + " TEXT, " +
                 COLUMN_STACKTRACE  + " TEXT, " +
@@ -78,8 +78,11 @@ public class SQLSaver {
         String sql = "INSERT INTO " + TABLE_NAME + " (" +
                 COLUMN_STACKTRACE + ", " + COLUMN_HASH + ", " + COLUMN_APP_VERSION + ", " +
                 COLUMN_APP_NAME + ", " + COLUMN_ANDROID_V + ", " + COLUMN_DEVICES + ", " +
-                COLUMN_LATEST_DATE + ")"+
-                " VALUES ('" + stack + "', '" + hash + "', '" + appversion + "', '" + app + "', '" + android + "', '" + devices + "', '" + latest + "');";
+                COLUMN_LATEST_DATE + "," + COLUMN_TIMES +
+                ")"+
+                " VALUES ('" + stack + "', '" + hash + "', '" + appversion + "', '"
+                + app + "', '" + android + "', '" + devices + "', '"
+                + latest + "', '" + 1 + "');";
 
         db.execSQL(sql);
         Cursor s = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE `hash`='" + hash + "'", null);
@@ -103,7 +106,7 @@ public class SQLSaver {
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 Error error;
-                long id = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
+                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
                 String stack = cursor.getString(cursor.getColumnIndex(COLUMN_STACKTRACE));
                 String hash = cursor.getString(cursor.getColumnIndex(COLUMN_HASH));
                 String devices = cursor.getString(cursor.getColumnIndex(COLUMN_DEVICES));
@@ -111,7 +114,7 @@ public class SQLSaver {
                 String appversion = cursor.getString(cursor.getColumnIndex(COLUMN_APP_VERSION));
                 String app = cursor.getString(cursor.getColumnIndex(COLUMN_APP_NAME));
                 String android = cursor.getString(cursor.getColumnIndex(COLUMN_ANDROID_V));
-                long times = cursor.getLong(cursor.getColumnIndex(COLUMN_TIMES));
+                int times = cursor.getInt(cursor.getColumnIndex(COLUMN_TIMES));
                 error = new Error(id, hash, devices, stack, lastreport, appversion, app, times, android, c);
                 retval.add(error);
                 cursor.moveToNext();
@@ -126,4 +129,51 @@ public class SQLSaver {
         return cursor.moveToFirst();
     }
 
+    public void onDestroy(){
+        db.close();
+    }
+
+    public void updateSQL(String devices, String stacktrace,
+                          String lastreported, String appversion, String app, String android, Error e){
+        String hash = Utils.md5(stacktrace);
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE `" + COLUMN_HASH + "`='" + hash + "'",null);
+        if(c.moveToFirst()){
+            //First, set up the basics
+            int id = c.getInt(c.getColumnIndex(COLUMN_ID));
+            //Now we get the variables we want to change
+            String devs = c.getString(c.getColumnIndex(COLUMN_DEVICES));
+            String and = c.getString(c.getColumnIndex(COLUMN_ANDROID_V));
+            String ver = c.getString(c.getColumnIndex(COLUMN_APP_VERSION));
+            int times = c.getInt(c.getColumnIndex(COLUMN_TIMES));
+            times++;
+            //Here we amend any new devices, android versions or app versions
+            //into the original strings
+            if(!devs.contains(devices)){
+                devs += ", " + devices;
+            }
+            if(!and.contains(android)){
+                and += ", " + android;
+            }
+            if(!ver.contains(appversion)){
+                ver += ", " + appversion;
+            }
+            //Now we need to update the error....
+            e.android = and;
+            e.devices = devs;
+            Log.e("DEBUG", "TIMES" + e.timesrep + ", " + times);
+            e.timesrep = times;
+            Log.e("DEBUG", "TIMES" + e.timesrep + ", " + times);
+            e.lastreported = lastreported;
+            /*
+            UPDATE table_name
+            SET column1 = value1, column2 = value2, ...
+            WHERE condition;
+            */
+            String sql = "UPDATE " + TABLE_NAME + " SET " + COLUMN_DEVICES + "='" + devs + "', " + COLUMN_ANDROID_V + "='" + and + "', " +
+                    COLUMN_TIMES + "='" + times + "', " + COLUMN_LATEST_DATE + "='" + lastreported + "', " + COLUMN_APP_VERSION + "='" + ver + "' " + " WHERE " + COLUMN_ID + "='" + id + "'";
+            db.execSQL(sql);
+            c.close();
+
+        }
+    }
 }

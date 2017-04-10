@@ -1,24 +1,29 @@
 package com.gamerscave.acrabackend.utils;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.gamerscave.acrabackend.content.Content;
+
 import java.util.HashMap;
+import java.util.Locale;
 
 import static android.R.id.input;
 
 public class Error {
-    private long ID;
-    private String hash;
-    private String devices;
-    private String stacktrace;
-    private String lastreported;
-    private String appversion;
-    private String app;
-    private long timesrep;
-    private String android;
-    private Context c;
+    public boolean merged;
+    public int ID;
+    public String hash;
+    public String devices;
+    public String stacktrace;
+    public String lastreported;
+    public String appversion;
+    public String app;
+    public int timesrep;
+    public String android;
+    public Context c;
     /**
      * Loads the issue from the database to display
      * @param ID
@@ -29,9 +34,9 @@ public class Error {
      * @param appversion
      * @param app
      */
-    public Error(long ID, String hash, String devices,
+    public Error(int ID, String hash, String devices,
                  String stacktrace, String lastreported, String appversion,
-                 String app, long times, String android, Context c) {
+                 String app, int times, String android, Context c) {
         this.ID = ID;
         this.hash = hash;
         this.devices = devices;
@@ -65,24 +70,37 @@ public class Error {
         data.put("timesrep", "1");
          */
         String hash = Utils.md5(stacktrace);
-
+        Log.e("DEBUG", hash);
         SQLSaver sql = new SQLSaver(c);
         if(sql.doesRowExist(hash)){
-            //TODO allow for increase of times
+            Error e = null;
+            for(Content.Item i : Content.ITEMS){
+                Error s = i.error;
+                if(s.getHash().equals(hash)){
+                    e = s;
+                    Log.e("DEBUG", "HASH = HASH");
+                }
+            }
+
+            if(e == null) throw new RuntimeException("This is an impossible scenario");
+            Log.e("DEBUG", "Error hash: " + e.getHash());
+            merged = true;
+            sql.updateSQL(devices, stacktrace, Utils.getDate(), appversion, app, android, e);
         }else {
-            HashMap<String, String> finished = sql.createAndInsertError(stacktrace, hash, devices, lastreported, appversion, app, android, "21.21.21", c);
+            HashMap<String, String> finished = sql.createAndInsertError(stacktrace, hash, devices, lastreported, appversion, app, android, Utils.getDate(), c);
             this.stacktrace = finished.get("stack");
             this.hash = finished.get("hash");
             this.devices = finished.get("devices");
             this.lastreported = finished.get("lastreport");
             this.appversion = finished.get("appversion");
             this.app = finished.get("app");
-            this.timesrep = Long.parseLong(finished.get("timesrep"));
-            this.ID = Long.parseLong(finished.get("id"));
+            this.timesrep = Integer.parseInt(finished.get("timesrep"));
+            this.ID = Integer.parseInt(finished.get("id"));
             this.android = finished.get("android");
             finished.clear();//clear the hashmap...
             finished = null;//and delete the reference. Save memory.
         }
+        sql.onDestroy();
     }
 
     public String getStacktrace(){
@@ -90,16 +108,77 @@ public class Error {
     }
 
     public String getDesc(){
-        String result = stacktrace.split("Exception")[0];
-        Log.e("DEBUG", "DESC: " + result);
+        String result = null;
+        String[] res = stacktrace.split("\n");
+        for(String s : res){
+            if(s.contains("Exception") && !s.contains("ACRA caught")){
+                result = s;
+                break;
+            }
+        }
+        if(result == null){
+            return "Name not found";
+        }
+        result = result.replaceAll("E/ACRA", "");
+        result = result.split("Exception:")[0] + "Exception";
+        result = result.replaceAll(" ", "");
         return result;
     }
 
     public String getTitle(){
-        return "Error #" + ID;
+        return "Error #" + ID + ":";
     }
 
     public long getId(){
         return ID;
+    }
+
+    public long getTimes(){
+        return timesrep;
+    }
+
+    public String getDevices(){
+        return devices;
+    }
+
+
+    public String getHash() {
+        return hash;
+    }
+
+    public String getLastreported() {
+        return lastreported;
+    }
+
+    public String getAppversion() {
+        return appversion;
+    }
+
+    public String getApp() {
+        return app;
+    }
+
+    public String getAndroid(){
+        return android;
+    }
+
+    public String getContent(){
+        String raw = "App: %s\n" +
+                "Version: %s\n" +
+                "Hash: %s\n" +
+                "Devices: %s\n" +
+                "Last report: %s\n" +
+                "Times reported: %s\n" +
+                "Android versions: %s\n" +
+                "Stacktrace:\n%s"//This time we want to get a new line before showing the content
+                ;
+        String finished = String.format(Locale.ENGLISH, raw, getApp(), getAppversion(), getHash(),
+                getDevices(), getLastreported(), Long.toString(getTimes()), getAndroid(), getStacktrace());
+
+        return finished;
+    }
+
+    public void addTime(){
+        timesrep++;
     }
 }

@@ -33,6 +33,8 @@ public class Content {
             addItem(new Item(e));
         }
 
+        sql.onDestroy();
+
     }
 
     public static void addItem(Item item) {

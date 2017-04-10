@@ -12,6 +12,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.gamerscave.acrabackend.Splash;
 import com.gamerscave.acrabackend.content.Content;
 
 import java.io.BufferedReader;
@@ -27,7 +28,7 @@ public class VolleyConnect {
     Context c;
     public void connect(final Context c){
         this.c = c;
-        Toast.makeText(c, "Initializing", Toast.LENGTH_LONG).show();
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, SCRIPTLINK,
                 new Response.Listener<String>() {
                     @Override
@@ -52,7 +53,6 @@ public class VolleyConnect {
 
         @Override
         protected String doInBackground(String... files) {
-            Error stb[] = new Error[files.length];
             for(int i = 0; i < files.length; i++){
                 Log.e("File", "File: " + files[i]);
 
@@ -70,11 +70,15 @@ public class VolleyConnect {
                             app = str.replace("PACKAGE_NAME = ", "");
                         }else if(str.contains("APP_VERSION_NAME =")){
                             appversion = str.replace("APP_VERSION_NAME = ", "");
-                        }else if(str.contains("at ") || str.contains("Exception") || str.contains("exception") ||
-                                str.contains("Caused by:") || str.contains("Caused by")){
-                            String aug = str.replace("LOGCAT = ", "");
-                            aug = aug.replace("{0-9}-{0-9} {0-9}:{0-9}:{0-9}.{0-9} {A-Z}/{A-Z} ({0-9}):", "");
-                            stacktrace += aug;
+                            /*
+                            In our app development process, debug follows some patterns. On critical errors(Or critical debug) we use DEBUG as the tag.
+                            IT is added here because this app(in development) used DEBUG to print out stacktraces, which contained ACRA.
+                            But it is still a nice security to have for other apps.
+                             */
+                        }else if(str.contains("E/ACRA") && !str.contains("E/DEBUG") && (str.contains("at") || str.contains("Exception") || str.contains("exception") ||
+                                str.contains("Caused by:") || str.contains("Caused by"))){
+
+                            stacktrace += str + "\n";
                         }else if(str.contains("PHONE_MODEL =")){
                             devices = str.replace("PHONE_MODEL = ", "");
                         }else if(str.contains("ANDROID_VERSION =")){
@@ -83,15 +87,22 @@ public class VolleyConnect {
 
                     }
 
-                    new Error(c, devices, stacktrace, lastreported, appversion, app, android);
+                    final String regex = "[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}";
+                    final String sreg = "\\(.*\\):";
+                    String aug = stacktrace.replaceAll(regex, "");
+                    aug = aug.replaceAll(sreg, "");
+                    aug = aug.replaceAll("LOGCAT = ", "");
+                    Log.e("DEBUG", aug);
+                    stacktrace = aug;
+
+                    Error e = new Error(c, devices, stacktrace, lastreported, appversion, app, android);
+                    if(!e.merged) {
+                        Content.addItem(new Content.Item(e));
+                    }
                     in.close();
-                } catch (MalformedURLException e) {
-                } catch (IOException e) {
-                }
+                } catch (Exception e) {}
             }
-            for(Error e : stb){
-                Content.addItem(new Content.Item(e));
-            }
+
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DELETELINK,
                     new Response.Listener<String>() {
                         @Override
@@ -103,6 +114,7 @@ public class VolleyConnect {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Toast.makeText(c,error.toString(),Toast.LENGTH_LONG).show();
+
                         }
                     });
 
