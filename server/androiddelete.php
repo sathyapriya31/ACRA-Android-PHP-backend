@@ -1,0 +1,17 @@
+<?php
+include "creds.php";
+/**
+ * TODO: FInd a way to use POST instead of GET(improve sender) 
+ */
+if (isset($_POST['username']) && isset($_POST['password'])) {
+    if($_POST['username'] == $USERNAME && $_POST['password'] == $PASSWORD){
+        $extension = ".txt";
+        $files = glob("logs/*" . $extension);
+        
+        foreach($files as $file){ // iterate files
+            if(is_file($file))
+                unlink($file); // delete file
+        }
+    }
+}
+?>
