@@ -121,12 +121,15 @@ public class Error {
         }
         result = result.replaceAll("E/ACRA", "");
         result = result.split("Exception:")[0] + "Exception";
+        result = result.replaceAll("Caused by:", "");
         result = result.replaceAll(" ", "");
         return result;
     }
 
     public String getTitle(){
+
         return "Error #" + ID + ":";
+
     }
 
     public long getId(){
@@ -163,22 +166,26 @@ public class Error {
     }
 
     public String getContent(){
-        String raw = "App: %s\n" +
-                "Version: %s\n" +
-                "Hash: %s\n" +
-                "Devices: %s\n" +
-                "Last report: %s\n" +
-                "Times reported: %s\n" +
-                "Android versions: %s\n" +
-                "Stacktrace:\n%s"//This time we want to get a new line before showing the content
-                ;
-        String finished = String.format(Locale.ENGLISH, raw, getApp(), getAppversion(), getHash(),
-                getDevices(), getLastreported(), Long.toString(getTimes()), getAndroid(), getStacktrace());
 
-        return finished;
+            String raw = "App: %s\n" +
+                    "Version: %s\n" +
+                    "Hash: %s\n" +
+                    "Devices: %s\n" +
+                    "Last report: %s\n" +
+                    "Times reported: %s\n" +
+                    "Android versions: %s\n" +
+                    "Stacktrace:\n%s"//This time we want to get a new line before showing the content
+                    ;
+            String finished = String.format(Locale.ENGLISH, raw, getApp(), getAppversion(), getHash(),
+                    getDevices(), getLastreported(), Long.toString(getTimes()), getAndroid(), getStacktrace());
+
+            return finished;
+
     }
 
     public void addTime(){
         timesrep++;
     }
+
+
 }

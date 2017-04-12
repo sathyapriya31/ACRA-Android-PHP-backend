@@ -6,10 +6,15 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.gamerscave.acrabackend.content.Content;
+import com.gamerscave.acrabackend.utils.SQLSaver;
 import com.gamerscave.acrabackend.utils.Saver;
 
 import java.util.Random;
 
+/**
+ * TODO: Create icons
+ * TODO: Improve SplashScreen with image
+ */
 public class Splash extends Activity {
     /**
      * This variable defines the device that will send crash reports. Using this system allows
@@ -28,36 +33,41 @@ public class Splash extends Activity {
      *
      */
     public static final boolean DEBUG = true;
+
+    public static boolean CREATING_SETTINGS = false;
     @Override
     public void onCreate(Bundle sis){
         super.onCreate(sis);
-        final String mod = android.os.Build.MODEL.toUpperCase();
-
-        if(!TEST_DEVICE_CRASH.contains(mod) || !DEBUG) {
-            new Content(this);
-        }
-        new Handler().postDelayed(new Runnable(){
-            @Override
-            public void run() {
-
-                //We crash inside the handler because of ACRA issue #574
-                //https://github.com/ACRA/acra/issues/574
-                if(TEST_DEVICE_CRASH.contains(mod) && DEBUG){
-                    Random r = new Random();
-                    boolean randOrDef = r.nextBoolean();
-
-                    throw new RuntimeException("This is a test crash");
-
-                }
-                //Reset the notification service
-
-                Saver.save("pushed", "false", Splash.this);
-                Intent i = new Intent(Splash.this, ErrorListActivity.class);
-                startActivity(i);
-                finish();
-
+        final String mod = android.os.Build.MODEL.toLowerCase();
+        if(!TEST_DEVICE_CRASH.toLowerCase().contains(mod) || !DEBUG) {
+            new Settings(this);
+            if(!CREATING_SETTINGS) {
+                SQLSaver sql = new SQLSaver(this);
+                sql.onDestroy();
+                new Content(this);
             }
-        }, 2500);
 
+        }
+        if(!CREATING_SETTINGS) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    //We crash inside the handler because of ACRA issue #574
+                    //https://github.com/ACRA/acra/issues/574
+                    if(TEST_DEVICE_CRASH.toLowerCase().contains(mod) && DEBUG){
+                        throw new RuntimeException("This is a test crash 574");
+                    }
+                    //Reset the notification service
+                    Saver.save("pushed", "false", Splash.this);
+                    Intent i = new Intent(Splash.this, ErrorListActivity.class);
+                    startActivity(i);
+                    finish();//Delete this activity. It is not needed, and going back to it will cause issues
+                }
+            }, 2500);//Wait 2.5 seconds before activating. Give VolleyConnect time
+        }else{
+            finish();
+        }
     }
+
 }

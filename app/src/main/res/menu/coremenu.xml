@@ -9,15 +9,19 @@
 
         <menu>
 
-            <item android:id="@+id/action_settings"
-                android:icon="@android:drawable/ic_menu_preferences"
+            <item android:id="@+id/settngs"
                 app:showAsAction="ifRoom"
-                android:title="Setting 1" />
+                android:title="Settings" />
 
-            <item android:id="@+id/action_help"
-                android:icon="@android:drawable/ic_menu_help"
+            <item android:id="@+id/wipedp"
                 app:showAsAction="ifRoom"
-                android:title="Setting 2" />
+                android:title="Wipe database" />
+
+            <item android:id="@+id/help"
+                app:showAsAction="ifRoom"
+                android:title="Help"
+                />
+
 
         </menu>
 

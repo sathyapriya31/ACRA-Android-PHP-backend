@@ -20,6 +20,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
+import com.gamerscave.acrabackend.content.Content;
+
 import static android.R.id.list;
 
 public class SQLSaver {
@@ -50,12 +52,6 @@ public class SQLSaver {
     ///////////////
     ///////////////
     ///////////////
-
-    public String createDeleteQuery(int id){
-        String retval;
-        retval = "D";
-        return retval;
-    }
 
     public String getCreateDatabaseQuery(@NonNull String TABLE_NAME){
         String retval = "CREATE TABLE IF NOT EXISTS '" + TABLE_NAME +
@@ -175,5 +171,28 @@ public class SQLSaver {
             c.close();
 
         }
+    }
+
+    public void wipe(){
+        String sql = "DELETE FROM " + TABLE_NAME;
+        Content.ITEMS.clear();
+        Content.ITEM_MAP.clear();
+        db.execSQL(sql);
+        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" + TABLE_NAME + "'");
+        Toast.makeText(c,
+                "Wipe complete. You may need to restart the app for the changes to become visible.",
+                Toast.LENGTH_LONG).show();
+    }
+
+    public void delete(String hash){
+        String SQL = "DELETE FROM " + TABLE_NAME + " WHERE `hash`='" + hash + "'";
+        db.execSQL(SQL);
+        for(Content.Item i : Content.ITEMS){
+            if(i.error.getHash().equals(hash)){
+                Content.ITEMS.remove(i);
+                break;
+            }
+        }
+        Content.recreateItemMap();//Once the items have been updated, we need to recreate the item map.
     }
 }

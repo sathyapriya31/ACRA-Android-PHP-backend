@@ -1,10 +1,22 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/error_detail"
-    style="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:textSize="12sp"
-    android:textIsSelectable="true"
-    tools:context="com.gamerscave.acrabackend.ErrorDetailFragment" />
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <Button
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:text="Delete issue"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete"/>
+    <TextView
+        android:id="@+id/error_detail"
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:textSize="12sp"
+        android:textIsSelectable="true"
+        tools:context="com.gamerscave.acrabackend.ErrorDetailFragment" />
+
+</LinearLayout>

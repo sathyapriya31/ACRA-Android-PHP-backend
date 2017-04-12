@@ -19,7 +19,7 @@ import org.acra.annotation.ReportsCrashes;
 
 )
 public class BackendApp extends Application {
-    public boolean isRunning = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -28,8 +28,4 @@ public class BackendApp extends Application {
 
     }
 
-
-    public void isRunning(boolean b){
-        this.isRunning = b;
-    }
 }

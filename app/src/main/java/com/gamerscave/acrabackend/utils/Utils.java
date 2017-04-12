@@ -30,7 +30,7 @@ public class Utils {
     public static String getDate(){
         Calendar c = Calendar.getInstance();
         int d = c.get(Calendar.DATE);
-        int m = c.get(Calendar.MONTH) + 1;
+        int m = c.get(Calendar.MONTH) + 1;//First month = 0
         int y = c.get(Calendar.YEAR);
 
         return String.format(Locale.ENGLISH, "%d.%d.%d", d, m, y);
