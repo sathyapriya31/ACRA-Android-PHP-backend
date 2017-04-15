@@ -46,13 +46,6 @@ public class SQLSaver {
         this.c = c;
     }
 
-
-
-
-    ///////////////
-    ///////////////
-    ///////////////
-
     public String getCreateDatabaseQuery(@NonNull String TABLE_NAME){
         String retval = "CREATE TABLE IF NOT EXISTS '" + TABLE_NAME +
                 "' (" + COLUMN_ID  + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -160,11 +153,6 @@ public class SQLSaver {
             e.timesrep = times;
             Log.e("DEBUG", "TIMES" + e.timesrep + ", " + times);
             e.lastreported = lastreported;
-            /*
-            UPDATE table_name
-            SET column1 = value1, column2 = value2, ...
-            WHERE condition;
-            */
             String sql = "UPDATE " + TABLE_NAME + " SET " + COLUMN_DEVICES + "='" + devs + "', " + COLUMN_ANDROID_V + "='" + and + "', " +
                     COLUMN_TIMES + "='" + times + "', " + COLUMN_LATEST_DATE + "='" + lastreported + "', " + COLUMN_APP_VERSION + "='" + ver + "' " + " WHERE " + COLUMN_ID + "='" + id + "'";
             db.execSQL(sql);
