@@ -10,9 +10,9 @@ import org.acra.annotation.ReportsCrashes;
 
 @ReportsCrashes(
 
-        formUri = "https://gamers-cave-world.com/crash/report.php",//Non-password protected.
-
-        customReportContent = { /* */ReportField.APP_VERSION_NAME, ReportField.PACKAGE_NAME,ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,ReportField.LOGCAT },
+        formUri = "INSERT URL HERE",
+        /*Due to limitations in the development process, these are the only fields that are handled in the backend(app-side)*/
+        customReportContent = {ReportField.APP_VERSION_NAME, ReportField.PACKAGE_NAME,ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,ReportField.LOGCAT },
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash
 
