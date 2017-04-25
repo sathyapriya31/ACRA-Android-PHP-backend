@@ -10,7 +10,7 @@ import org.acra.annotation.ReportsCrashes;
 
 @ReportsCrashes(
 
-        formUri = "https://gamers-cave-world.com/crash/report.php",
+        formUri = "",
         /*Due to limitations in the development process, these are the only fields that are handled in the backend(app-side)*/
         customReportContent = {ReportField.APP_VERSION_NAME, ReportField.PACKAGE_NAME,
                 ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,
