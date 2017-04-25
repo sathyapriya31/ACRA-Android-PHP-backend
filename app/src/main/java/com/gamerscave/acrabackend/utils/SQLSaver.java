@@ -36,6 +36,7 @@ public class SQLSaver {
     private static final String COLUMN_APP_NAME = "name";
     private static final String COLUMN_APP_VERSION = "appversion";
     private static final String COLUMN_ANDROID_V = "androidversion";
+    private static final String COLUMN_OTHER_INFO = "otherinfo";
     Context c;
     SQLiteDatabase db;
     public SQLSaver(Context c) {
@@ -56,22 +57,24 @@ public class SQLSaver {
                 COLUMN_LATEST_DATE + " TEXT, " +
                 COLUMN_APP_NAME    + " TEXT, " +
                 COLUMN_APP_VERSION + " TEXT, " +
+                COLUMN_OTHER_INFO  + " TEXT, " +
                 COLUMN_ANDROID_V   + " TEXT)";
         return retval;
     }
 
     public HashMap<String, String> createAndInsertError(String stack, String hash, String devices,
-                                    String lastreported, String appversion, String app, String android, String latest, Context c){
-        ContentValues values = new ContentValues();
+                                    String lastreported, String appversion, String app,
+                                                        String android, String latest, String otherInfo,
+                                                        Context c){
         stack = stack.replace("'", "");
         String sql = "INSERT INTO " + TABLE_NAME + " (" +
                 COLUMN_STACKTRACE + ", " + COLUMN_HASH + ", " + COLUMN_APP_VERSION + ", " +
                 COLUMN_APP_NAME + ", " + COLUMN_ANDROID_V + ", " + COLUMN_DEVICES + ", " +
-                COLUMN_LATEST_DATE + "," + COLUMN_TIMES +
+                COLUMN_LATEST_DATE + "," + COLUMN_TIMES +  "," + COLUMN_OTHER_INFO +
                 ")"+
                 " VALUES ('" + stack + "', '" + hash + "', '" + appversion + "', '"
                 + app + "', '" + android + "', '" + devices + "', '"
-                + latest + "', '" + 1 + "');";
+                + latest + "', '" + 1 + "','" + otherInfo + "');";
 
         db.execSQL(sql);
         Cursor s = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE `hash`='" + hash + "'", null);
@@ -86,6 +89,7 @@ public class SQLSaver {
         data.put("app", app);
         data.put("timesrep", "1");
         data.put("android", android);
+        data.put("info", otherInfo);
         return data;
     }
 
@@ -104,7 +108,8 @@ public class SQLSaver {
                 String app = cursor.getString(cursor.getColumnIndex(COLUMN_APP_NAME));
                 String android = cursor.getString(cursor.getColumnIndex(COLUMN_ANDROID_V));
                 int times = cursor.getInt(cursor.getColumnIndex(COLUMN_TIMES));
-                error = new Error(id, hash, devices, stack, lastreport, appversion, app, times, android, c);
+                String otherInfo = cursor.getString(cursor.getColumnIndex(COLUMN_OTHER_INFO));
+                error = new Error(id, hash, devices, stack, lastreport, appversion, app, times, android, otherInfo, c);
                 retval.add(error);
                 cursor.moveToNext();
             }

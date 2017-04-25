@@ -33,12 +33,13 @@ public class HomeSCR {
         for(int i = 0; i < apps; i++){
             String pck = app.get(i).pack;
             int count = app.get(i).timesRep;
-            int percent = (count / total) * 100;
+
+            double percent = (count / total) * 100;
             HOMESCREEN_CONTENT += String.format(Locale.ENGLISH,
                     appsstr,
                     Integer.toString(count),
                     pck,
-                    Integer.toString(percent)) + appstr_2;
+                    Double.toString(percent)) + appstr_2;
         }
 
         HOMESCREEN_CONTENT += String.format(Locale.ENGLISH, fp, BuildConfig.VERSION_NAME);

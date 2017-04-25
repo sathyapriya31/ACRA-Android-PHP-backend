@@ -23,16 +23,20 @@ public class Utils {
             }
             return sb.toString().toLowerCase();
         } catch (Exception exc) {
-            return ""; // Impossibru!
+            return "Error creating hash.";
         }
     }
 
+    /**
+     * Gets the current date in the format day.month.year
+     * @return
+     */
     public static String getDate(){
         Calendar c = Calendar.getInstance();
         int d = c.get(Calendar.DATE);
-        int m = c.get(Calendar.MONTH) + 1;//First month = 0
+        int m = c.get(Calendar.MONTH) + 1;//First month = 0. Change it to 1
         int y = c.get(Calendar.YEAR);
 
-        return String.format(Locale.ENGLISH, "%d.%d.%d", d, m, y);
+        return String.format(Locale.ENGLISH, "%d.%d.%d", d, m, y);//Format and return
     }
 }

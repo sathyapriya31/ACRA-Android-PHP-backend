@@ -241,6 +241,8 @@ public class ErrorListActivity extends AppCompatActivity {
                         }).show();
 
                 return true;
+            case R.id.crash:
+                throw new RuntimeException("Test error");
             case R.id.help:
                 AlertDialog.Builder b2 = new AlertDialog.Builder(this);
 
@@ -263,7 +265,7 @@ public class ErrorListActivity extends AppCompatActivity {
                             public void onClick(DialogInterface iface, int id){
                                 iface.dismiss();
                             }
-                        }).setNegativeButton("I need more information(open GitHub in browser)", new DialogInterface.OnClickListener(){
+                        }).setNegativeButton("Open Github in the browser", new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface iface, int id){
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/GamersCave/ACRA-Android-PHP-backend"));

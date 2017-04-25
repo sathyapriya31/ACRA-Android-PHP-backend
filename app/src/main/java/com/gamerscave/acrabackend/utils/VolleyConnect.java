@@ -14,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.gamerscave.acrabackend.BuildConfig;
 import com.gamerscave.acrabackend.R;
 import com.gamerscave.acrabackend.Settings;
 import com.gamerscave.acrabackend.Splash;
@@ -29,6 +30,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class VolleyConnect {
     /**
@@ -89,7 +91,7 @@ public class VolleyConnect {
             for(int i = 0; i < files.length; i++){
 
 
-                String devices = "", stacktrace = "", lastreported = "", appversion = "", app = "", android = "";
+                String devices = "", stacktrace = "", lastreported = "", appversion = "", app = "", android = "", otherinfo = "Other data:\n";
 
                 try {
                     // Create a URL for the desired page
@@ -124,6 +126,13 @@ public class VolleyConnect {
                             devices = str.replace("PHONE_MODEL = ", "");
                         }else if(str.contains("ANDROID_VERSION =")){
                             android = str.replace("ANDROID_VERSION = ", "");
+                        }else{
+
+                            if(!Pattern.compile("[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}").matcher(str).find() && !str.contains("LOGCAT")
+                                    ) {
+                                String info = str.replace(" =", ":");
+                                otherinfo += info + "\n";
+                            }
                         }
 
                     }
@@ -136,7 +145,7 @@ public class VolleyConnect {
                     Log.e("DEBUG", aug);
                     stacktrace = aug;
 
-                    Error e = new Error(c, devices, stacktrace, lastreported, appversion, app, android);
+                    Error e = new Error(c, devices, stacktrace, lastreported, appversion, app, android, otherinfo);
                     if(!e.merged) {
                         Content.addItem(new Content.Item(e));
                     }

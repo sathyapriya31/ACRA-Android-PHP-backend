@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static android.R.id.input;
+import static android.os.Build.VERSION_CODES.M;
 
 public class Error {
     public boolean merged;
@@ -23,6 +24,7 @@ public class Error {
     public String app;
     public int timesrep;
     public String android;
+    public String otherInfo;
     public Context c;
     /**
      * Loads the issue from the database to display
@@ -36,7 +38,7 @@ public class Error {
      */
     public Error(int ID, String hash, String devices,
                  String stacktrace, String lastreported, String appversion,
-                 String app, int times, String android, Context c) {
+                 String app, int times, String android, String otherInfo, Context c) {
         this.ID = ID;
         this.hash = hash;
         this.devices = devices;
@@ -47,6 +49,7 @@ public class Error {
         this.timesrep = times;
         this.android = android;
         this.c = c;
+        this.otherInfo = otherInfo;
     }
 
     /**
@@ -58,7 +61,8 @@ public class Error {
      * @param app
      */
     public Error(Context c, String devices, String stacktrace,
-                 String lastreported, String appversion, String app, String android){
+                 String lastreported, String appversion, String app, String android,
+                 String otherInfo){
         /*
                 data.put("id", Long.toString(newRowId));
         data.put("stack", stack);
@@ -69,6 +73,7 @@ public class Error {
         data.put("app", app);
         data.put("timesrep", "1");
          */
+
         String hash = Utils.md5(stacktrace);
         Log.e("DEBUG", hash);
         SQLSaver sql = new SQLSaver(c);
@@ -87,7 +92,7 @@ public class Error {
             merged = true;
             sql.updateSQL(devices, stacktrace, Utils.getDate(), appversion, app, android, e);
         }else {
-            HashMap<String, String> finished = sql.createAndInsertError(stacktrace, hash, devices, lastreported, appversion, app, android, Utils.getDate(), c);
+            HashMap<String, String> finished = sql.createAndInsertError(stacktrace, hash, devices, lastreported, appversion, app, android, Utils.getDate(), otherInfo, c);
             this.stacktrace = finished.get("stack");
             this.hash = finished.get("hash");
             this.devices = finished.get("devices");
@@ -97,6 +102,7 @@ public class Error {
             this.timesrep = Integer.parseInt(finished.get("timesrep"));
             this.ID = Integer.parseInt(finished.get("id"));
             this.android = finished.get("android");
+            this.otherInfo = finished.get("info");
             finished.clear();//clear the hashmap...
             finished = null;//and delete the reference. Save memory.
         }
@@ -173,11 +179,12 @@ public class Error {
                     "Devices: %s\n" +
                     "Last report: %s\n" +
                     "Times reported: %s\n" +
-                    "Android versions: %s\n" +
-                    "Stacktrace:\n%s"//This time we want to get a new line before showing the content
+                    "Android versions: %s\n\n" +
+                    "%s\n" +
+                    "Stacktrace:\n%s" //This time we want to get a new line before showing the content
                     ;
             String finished = String.format(Locale.ENGLISH, raw, getApp(), getAppversion(), getHash(),
-                    getDevices(), getLastreported(), Long.toString(getTimes()), getAndroid(), getStacktrace());
+                    getDevices(), getLastreported(), Long.toString(getTimes()), getAndroid(), otherInfo, getStacktrace());
 
             return finished;
 

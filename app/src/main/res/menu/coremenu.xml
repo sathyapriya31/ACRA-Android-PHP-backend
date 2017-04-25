@@ -21,7 +21,9 @@
                 app:showAsAction="ifRoom"
                 android:title="Help"
                 />
-
+            <item android:id="@+id/crash"
+                android:title="Crash the app. Sends stacktrace to you if configured"
+                app:showAsAction="ifRoom"/>
 
         </menu>
 
