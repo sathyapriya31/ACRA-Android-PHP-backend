@@ -10,12 +10,7 @@
     }
     fclose($file);
     
-    
-    /*
-     * Used to check if the directory is empty or not.
-     * In its own function in case we need it somewhere
-     * else, it is just to include this class.
-     */
+   
     function is_dir_empty($dir) {
         if (!is_readable($dir)) return NULL; 
             $handle = opendir($dir);
