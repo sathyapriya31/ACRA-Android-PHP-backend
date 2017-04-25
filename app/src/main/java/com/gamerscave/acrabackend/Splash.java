@@ -32,7 +32,7 @@ public class Splash extends Activity {
      * here at the creation of the app.
      *
      */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static boolean CREATING_SETTINGS = false;
     @Override
