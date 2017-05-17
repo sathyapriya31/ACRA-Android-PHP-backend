@@ -38,10 +38,15 @@ Please refer to [the wiki](https://github.com/GamersCave/ACRA-Android-PHP-backen
 
 <img src="https://raw.githubusercontent.com/GamersCave/ACRA-Android-PHP-backend/master/img/device-2017-04-12-175310.png">
 The home screen
+<hr>
+
 <img src="https://raw.githubusercontent.com/GamersCave/ACRA-Android-PHP-backend/master/img/device-2017-04-12-175108.png">
 An issue as seen from the app
+<hr>
+
 <img src="https://raw.githubusercontent.com/GamersCave/ACRA-Android-PHP-backend/master/img/device-2017-04-12-175219.png">
 Configuration screen(as of v 1.0)
-<img src="https://raw.githubusercontent.com/GamersCave/ACRA-Android-PHP-backend/master/img/device-2017-04-12-175422.png">
+<hr>
 
+<img src="https://raw.githubusercontent.com/GamersCave/ACRA-Android-PHP-backend/master/img/device-2017-04-12-175422.png">
 The persistent notification shown by the background service
