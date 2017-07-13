@@ -27,7 +27,7 @@ Other fields reported are gathered under "other information" (see update 1.1)
 
 Any fields are now supported in input. The fields mentioned above have their own fields, while other fields have a collected field name called `other information`. If you use any other fields than those mentioned above, the `other information` field is where those fields are stored.
 
-# Update 1.2
+## Update 1.2
 
 (Still in progress):
 
