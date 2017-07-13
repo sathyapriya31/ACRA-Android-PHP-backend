@@ -13,13 +13,15 @@ If you have resolved all the errors, or just feel like having a database reset, 
 
 You can also delete single issues, by tapping the issue you want to delete and press "delete". Due to circumstances, the entry itself will not disappear from the list instantly, and if you are on a tablet and see two pane mode, the error details will still be visible(until you press on a different issue or on the "home"-button). 
 
-The following fields are currently supported by the backend. (An update will come eventually that will allow for support for any field, but you can contribute to this backend to make that day come faster):
+These fields have custom spaces in the report section:
 
 * ReportField.APP_VERSION_NAME
 * ReportField.PACKAGE_NAME
 * ReportField.ANDROID_VERSION
 * ReportField.PHONE_MODEL
 * ReportField.LOGCAT
+
+Other fields reported are gathered under "other information" (see update 1.1)
 
 ## Update 1.1
 
