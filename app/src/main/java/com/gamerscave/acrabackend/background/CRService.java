@@ -66,7 +66,7 @@ public class CRService extends Service {
             final NotificationCompat.Builder builder = new NotificationCompat.Builder(CRService.this);
             builder.setContentTitle("ACRA got you covered!")
                     .setAutoCancel(true)
-                    .setColor(getResources().getColor(R.color.main))
+                    .setColor(getResources().getColor(R.color.main))//TODO fix deprecated call
                     .setContentText("The backend is running, and you will be notified of potential crashes.")
                     .setSmallIcon(R.mipmap.ic_launcher);
 

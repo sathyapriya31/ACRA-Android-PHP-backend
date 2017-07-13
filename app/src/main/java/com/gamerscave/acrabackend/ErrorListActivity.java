@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.R.attr.fragment;
+
 /**
  * An activity representing a list of Errors. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -129,6 +131,7 @@ public class ErrorListActivity extends AppCompatActivity {
                             arguments.putString(ErrorDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.error.getId()));
                             ErrorDetailFragment fragment = new ErrorDetailFragment();
                             fragment.setArguments(arguments);
+                            fragment.injectActivity(ErrorListActivity.this);
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.error_detail_container, fragment)
                                     .commit();
@@ -292,10 +295,11 @@ public class ErrorListActivity extends AppCompatActivity {
         if(timer == null && Settings.AUTO_REFRESH_WHILE_OPEN){
             timer = new Timer();
             runnable = new UpdateInterval();
-            //30000 ms = 10 seconds
-            //This is at a short rate because it should update a lot. Can be adjusted by editing source code
-            //By having it at 30 seconds, it will update to handle whatever new errors show up
-            timer.scheduleAtFixedRate(runnable, 0L, 30000);
+            //10000 (ms) = 10 seconds
+            //It was at 30 seconds in 1.1 and 1.0, but it has been changed as it needs to be updated for the errors to show.
+            //30 seconds is too long to wait, so it is changed to 10 seconds instead. This has to be balanced. 10 seconds
+            //may be to little or too much on updates.
+            timer.scheduleAtFixedRate(runnable, 0L, 10000);
         }
     }
 
@@ -343,6 +347,9 @@ public class ErrorListActivity extends AppCompatActivity {
         }
     }
 
-
+    public void dismissFragment(){
+        getSupportFragmentManager().beginTransaction().
+                remove(getSupportFragmentManager().findFragmentById(R.id.error_detail_container)).commit();
+    }
 
 }

@@ -11,7 +11,17 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.gamerscave.acrabackend.utils.Saver;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Setup extends Activity implements View.OnClickListener {
     EditText username, password, server_address, directory, deletescript, listscript, corescript;
@@ -45,6 +55,15 @@ public class Setup extends Activity implements View.OnClickListener {
             deletescript.setText(Settings.DELETE_SCRIPT);
             listscript.setText(Settings.LIST_FILES);
             corescript.setText(Settings.MAIN_SCRIPT);
+        }else {
+            persistent.setChecked(true);
+            allowbg.setChecked(true);
+            sync.setChecked(true);
+            //This is to set the default setting for these settings.
+            //These are very useful and should be on by default. They can
+            //be disabled. It is easy to overlook these on setup, so they are automatically
+            //set to true to prevent issues on github related to it not working, when it
+            //in fact is a missing setting
         }
         save.setOnClickListener(this);
         Splash.CREATING_SETTINGS = false;
@@ -61,32 +80,93 @@ public class Setup extends Activity implements View.OnClickListener {
                         !deletescript.getText().toString().matches("") &&
                         !listscript.getText().toString().matches("") &&
                         !corescript.getText().toString().matches("")){
-                    Toast.makeText(this, "All data is in place", Toast.LENGTH_LONG).show();
-                    Log.e("DEBUG", "USERNAME " + username.getText().toString() + "\n"
-                            + password.getText().toString() + "\n"
-                            + server_address.getText().toString() + "\n"
-                            + directory.getText().toString() + "\n"
-                            + deletescript.getText().toString() + "\n"
-                            + listscript.getText().toString() + "\n"
-                            + corescript.getText().toString() + "\n"
-                            + persistent.isChecked() + "\n"
-                            + allowbg.isChecked() + "\n"
-                            + sync.isChecked() + "\n");
-                    Settings.save(this, server_address.getText().toString(),
-                            directory.getText().toString(),
-                            corescript.getText().toString(),
-                            listscript.getText().toString(),
-                            deletescript.getText().toString(),
-                            username.getText().toString(),
-                            password.getText().toString(),
-                            sync.isChecked(), allowbg.isChecked(), persistent.isChecked());
-                    Intent i = new Intent(Setup.this, ErrorListActivity.class);
-                    startActivity(i);
+                    //Toast.makeText(this, "All data is in place", Toast.LENGTH_LONG).show();//Debug call
+
+
+                    String script = server_address.getText().toString() + directory.getText().toString() + "checkpass.php";
+                    check(script, username.getText().toString(), password.getText().toString());
+
                 }else{
                     Toast.makeText(this, "Missing data", Toast.LENGTH_LONG).show();
                 }
                 break;
         }
+    }
+    String response;
+    boolean complete = false;
+    boolean error = false;
+    public void check(final String url, final String username, final String password){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try{
+                            boolean resp = Boolean.parseBoolean(response);
+                            if(resp){
+                                Toast.makeText(Setup.this, "Everything appears to be in order.", Toast.LENGTH_LONG).show();
+                                Settings.save(Setup.this, server_address.getText().toString(),
+                                        directory.getText().toString(),
+                                        corescript.getText().toString(),
+                                        listscript.getText().toString(),
+                                        deletescript.getText().toString(),
+                                        Setup.this.username.getText().toString(),
+                                        Setup.this.password.getText().toString(),
+                                        sync.isChecked(), allowbg.isChecked(), persistent.isChecked());
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            Thread.sleep(500);
+                                        }catch (Exception e){
+                                            //Ignore
+                                        }
+                                        Intent i = new Intent(Setup.this, ErrorListActivity.class);
+                                        startActivity(i);
+                                        finish();
+                                    }
+                                });
+
+                                return;
+                            }
+
+                            Toast.makeText(Setup.this, "Incorrect username or password", Toast.LENGTH_LONG).show();
+                            return;//Avoid the final Toast.makeText that prints out the response
+                        }catch (Exception e){
+                            //Ignore: This is caught if the response isn't a boolean. Thus, it is text
+                            //and we want to treat it differently
+                        }
+
+                        Toast.makeText(Setup.this, response, Toast.LENGTH_LONG).show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(Setup.this, error.toString(), Toast.LENGTH_LONG).show();
+
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<>();
+                params.put("username", username);
+                params.put("password", password);
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Setup.this);
+        requestQueue.add(stringRequest);
+
     }
 
 }

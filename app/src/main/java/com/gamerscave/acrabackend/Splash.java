@@ -31,6 +31,11 @@ public class Splash extends Activity {
      * This is used during the development of this app, to not have to create two different versions
      * here at the creation of the app.
      *
+     * Setting this to true will crash on one of the devices(see TEST_DEVICE_CRASH) on boot. This will
+     * (if configured) send the crash to you for you to view on one of your devices.
+     *
+     * You can, of course, keep this on false and use the crash button on the main screen. This is just
+     * a shortcut implemented to speed up the process (and reduce taps)
      */
     public static final boolean DEBUG = false;
 

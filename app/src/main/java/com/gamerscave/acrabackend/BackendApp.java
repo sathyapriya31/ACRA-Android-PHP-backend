@@ -10,13 +10,14 @@ import org.acra.annotation.ReportsCrashes;
 
 @ReportsCrashes(
 
-        formUri = "",
-        /*Due to limitations in the development process, these are the only fields that are handled in the backend(app-side)*/
-        customReportContent = {ReportField.APP_VERSION_NAME, ReportField.PACKAGE_NAME,
+        formUri = "",//TODO add your link here
+        /*Changes in the backend allows more than these fields.
+        * You can now use whatever fields you need, and change this to whatever you need.*/
+        customReportContent = {ReportField.APP_VERSION_NAME, ReportField.PACKAGE_NAME,//TODO modify this to your needs
                 ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,
                 ReportField.LOGCAT, ReportField.BRAND,
                 ReportField.REPORT_ID},
-        mode = ReportingInteractionMode.TOAST,
+        mode = ReportingInteractionMode.TOAST,//TODO change if wanted
         resToastText = R.string.crash
 
 )
