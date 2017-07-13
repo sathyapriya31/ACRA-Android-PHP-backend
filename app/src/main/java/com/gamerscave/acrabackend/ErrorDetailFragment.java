@@ -30,6 +30,7 @@ public class ErrorDetailFragment extends Fragment {
      */
     public static final String ARG_ITEM_ID = "item_id";
 
+    private Activity activity;
     /**
      * The dummy content this fragment is presenting.
      */
@@ -78,10 +79,15 @@ public class ErrorDetailFragment extends Fragment {
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     SQLSaver sql = new SQLSaver(getActivity());
                     sql.delete(mItem.error.hash);
                     sql.onDestroy();
-
+                    if(activity instanceof ErrorDetailActivity){
+                        ((ErrorDetailActivity)(getActivity())).dismiss();
+                    }else if(activity instanceof ErrorListActivity){
+                        ((ErrorListActivity)(getActivity())).dismissFragment();
+                    }
 
                 }
             });
@@ -94,5 +100,9 @@ public class ErrorDetailFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    public void injectActivity(Activity a){
+        this.activity = a;
     }
 }

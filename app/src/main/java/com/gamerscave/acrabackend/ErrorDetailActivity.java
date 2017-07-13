@@ -49,6 +49,7 @@ public class ErrorDetailActivity extends AppCompatActivity {
                     getIntent().getStringExtra(ErrorDetailFragment.ARG_ITEM_ID));
             ErrorDetailFragment fragment = new ErrorDetailFragment();
             fragment.setArguments(arguments);
+            fragment.injectActivity(this);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.error_detail_container, fragment)
                     .commit();
@@ -70,5 +71,9 @@ public class ErrorDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void dismiss(){
+        finish();
     }
 }
