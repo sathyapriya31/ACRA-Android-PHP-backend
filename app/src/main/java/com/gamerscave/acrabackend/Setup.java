@@ -72,6 +72,11 @@ public class Setup extends Activity implements View.OnClickListener {
                             + persistent.isChecked() + "\n"
                             + allowbg.isChecked() + "\n"
                             + sync.isChecked() + "\n");
+                    String script = server_address.getText().toString() + "/" + directory.getText().toString() + "/checkpass.php";
+                    boolean correctPass = check(script, username.getText().toString(), password.getText().toString());
+                    if(!correctPass){
+                        return;
+                    }
                     Settings.save(this, server_address.getText().toString(),
                             directory.getText().toString(),
                             corescript.getText().toString(),
@@ -88,5 +93,55 @@ public class Setup extends Activity implements View.OnClickListener {
                 break;
         }
     }
+    
+    public boolean check(String url, String username, String password){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, SCRIPTLINK,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try{
+                            boolean retval = Boolean.parseBoolean(response);
+                            if(retval){
+                                return true;
+                            }else{
+                                Toast.makeText(Setup.this, "Incorrect credentials", Toast.LENGTH_LONG).show();
+                                return false;   
+                            }
+                        }catch(Exception e){
+                            //We have text. Ignore the exception, it is only failure to parse the boolean.
+                            //It isn't a boolean, so...
+                        }
+                        //...we end up here instead of returning at an earlier point. We show a toast
+                        //to tell what is the issue (returned from the script):
+                        Toast.makeText(Setup.this, response, Toast.LENGTH_LONG).show();
+                        //And then return false to ensure the scrupt understands it failed
+                        return false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(c,error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("username", username);
+                params.put("password", password);
+                return params;
+            }
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+        requestQueue.add(stringRequest); 
+    }
+    
 }
