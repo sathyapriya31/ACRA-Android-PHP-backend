@@ -72,6 +72,12 @@ public class Setup extends Activity implements View.OnClickListener {
                             + persistent.isChecked() + "\n"
                             + allowbg.isChecked() + "\n"
                             + sync.isChecked() + "\n");
+                    if(server_address.getText().toString() == null || directory.getText().toString() == null ||
+                      username.getText().toString() == null || password.getText().toString(= == null){
+                           Toast.makeText(Setup.this, "Missing server address, directory, username or password", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    
                     String script = server_address.getText().toString() + "/" + directory.getText().toString() + "/checkpass.php";
                     boolean correctPass = check(script, username.getText().toString(), password.getText().toString());
                     if(!correctPass){
@@ -122,6 +128,7 @@ public class Setup extends Activity implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(c,error.toString(),Toast.LENGTH_LONG).show();
+                        return false;
                     }
                 }){
             @Override
@@ -138,10 +145,12 @@ public class Setup extends Activity implements View.OnClickListener {
                 params.put("Content-Type","application/x-www-form-urlencoded");
                 return params;
             }
+            
         };
 
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         requestQueue.add(stringRequest); 
+        return false;
     }
     
 }
