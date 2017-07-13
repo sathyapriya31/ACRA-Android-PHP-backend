@@ -27,6 +27,14 @@ Other fields reported are gathered under "other information" (see update 1.1)
 
 Any fields are now supported in input. The fields mentioned above have their own fields, while other fields have a collected field name called `other information`. If you use any other fields than those mentioned above, the `other information` field is where those fields are stored.
 
+# Update 1.2
+
+(Still in progress):
+
+* Remove fragment/activity when issue is deleted (as per #2)
+* Check password to make sure it is correct on setup (as per #1)
+* Other fixes
+
 # Worth noting
 
 * Because the same issues are detected using a hashed code, no different issues can have the same error. A single number in difference will make the hash different. This means you do not have to worry about two different issues having the same hash
